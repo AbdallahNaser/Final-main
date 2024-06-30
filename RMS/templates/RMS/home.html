@@ -1,0 +1,284 @@
+{% extends 'RMS/main.html' %}
+{% load static %}
+{% block content %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Company Jobs</title>
+  <link rel="stylesheet" href="{% static 'styles.css' %}">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <style>
+    @import url("https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap");
+
+    body {
+      font-family: "Roboto", sans-serif;
+      font-size: 16px;
+      color: #333;
+      background-color: #f8f9fa;
+      margin: 0;
+      padding: 0;
+    }
+
+    .container {
+      max-width: 1400px;
+      width:1200px;
+      margin: auto 0px 0px 150px;
+      padding: 20px;
+    }
+
+    h1, h2 {
+      font-weight: 700;
+      color: #343a40;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    .search-bar {
+      display: flex;
+      justify-content: flex-end;
+      margin-bottom: 20px;
+    }
+
+    .search-bar form {
+      display: flex;
+      align-items: center;
+    }
+
+    .search-bar input {
+      padding: 5px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      margin-right: 10px;
+    }
+
+    .search-bar button {
+      background-color: #25507f;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      padding: 5px 10px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .search-bar button:hover {
+      background-color: #0056b3;
+    }
+
+    .postcard {
+      display: flex;
+      flex-direction: row;
+      background-color: #fff;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+      margin-bottom: 20px;
+      transition: transform 0.3s ease;
+    }
+
+    .postcard:hover {
+      transform: scale(1.04);
+    }
+
+    .postcard__img {
+      max-width: 300px;
+      width: 100%;
+      object-fit:fill;
+      margin:90px 1px 23px 30px;
+      border:2px solid;
+      border-radius: 10px;
+    }
+
+    .postcard__text {
+      padding: 20px;
+      flex: 1;
+    }
+
+    .postcard__title {
+      font-size: 2rem;
+      color: #25507f;
+      margin-bottom: 10px;
+    }
+
+    .postcard__title a {
+      text-decoration: none;
+      color: inherit;
+      transition: color 0.3s ease;
+    }
+
+    .postcard__title a:hover {
+      color: #0056b3;
+    }
+
+    .postcard__subtitle {
+      font-size: 0.9rem;
+      color: #6c757d;
+      margin-bottom: 10px;
+    }
+
+    .postcard__preview-txt {
+      color: #555;
+      margin-bottom: 20px;
+    }
+
+    .postcard__tagbox {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .tag__item {
+      background-color: #e9ecef;
+      color: #343a40;
+      padding: 5px 10px;
+      border-radius: 5px;
+      font-size: 0.9rem;
+
+    }
+
+    .tag__item.play {
+      background-color: #0b3a49;
+      color: #fff;
+    }
+
+    .tag__item.play a {
+      color: #fff;
+      text-decoration: none;
+    }
+
+    .tag__item.play a:hover {
+      text-decoration: underline;
+    }
+
+    .tag__item button {
+      background: none;
+      border: none;
+      color: inherit;
+      cursor: pointer;
+      padding: 0;
+      font: inherit;
+      outline: inherit;
+    }
+  </style>
+</head>
+<body>
+  <section>
+
+
+
+
+    <div class="container">
+      <div class="search-bar" style="margin-top: 50px;">
+        <form class="form-inline my-2 my-lg-0" method="GET" style="display: flex; align-items: center;">
+          <input type="text" name="search" placeholder="Search companies" style="flex: 1; margin-right: 10px; padding: 5px;">
+          <button class="btn" type="submit" style="padding: 5px 10px;">
+            <i class="fas fa-search"></i>
+          </button>
+        </form>
+        
+      </div>
+      {% for company in companies %}
+      <article class="postcard">
+       
+      </article>
+      {% for job in company.jobs.all %}
+      {% if job.is_active %}
+      <article class="postcard">
+
+
+
+
+        <img class="postcard__img" src="{{ company.companyphoto.url }}" alt="Job Image">
+        <div class="postcard__text">
+
+          <h2 class="postcard__title" style="margin-bottom: 70px; padding-left:180px;">
+            <a href="{% url 'companyPro' company.id %}" style="float: left; color:black !important; font-size:38px;">{{ company.name }}</a>
+
+            {% if request.user != company.user %}
+          <form method="POST"  style="float: right; height:190px;" action="{% url 'follow_unfollow_company' company.id %}">
+            {% csrf_token %}
+            {% if request.user in company.followers.all %}
+            <span class="tag__item play">
+              <button type="submit" style="width:150px; font-size:18px; padding:0px 20px;margin-bottom:140px;">+ Following</button>
+            </span>
+            {% else %}
+            <span class="tag__item play">
+              <button type="submit" style="width:150px;height:50px;  font-size:18px; padding:0px 20px;">+ Follow</button>
+            </span>
+            {% endif %}
+          </form>
+          {% endif %}
+          </h2>
+
+
+          
+
+
+          <div style="border:solid 2px rgb(79, 71, 71); padding:30px; border-radius:8px; -webkit-box-shadow: -2px -1px 15px 7px rgba(0,0,0,0.5);
+  -moz-box-shadow: -3px -2px 30px 14px rgba(0,0,0,0.425);
+  box-shadow: -4px -3px 45px 21px rgba(0,0,0,0.35);">
+          <h2 class="postcard__title">
+            <a href="#">{{ job.title }}</a>
+          </h2>
+          <div class="postcard__subtitle">
+            <time datetime="{{ job.end_date }}">
+              <i class="fas fa-calendar-alt mr-2"></i> End Date: {{ job.end_date }}
+            </time>
+          </div>
+          <div class="postcard__preview-txt">
+            <p><strong>Work Experience:</strong> {{ job.workexperience }}</p>
+            <p><strong>Education:</strong> {{ job.education }}</p>
+            <p><strong>Technical Skills:</strong> {{ job.technicalskills }}</p>
+            <p><strong>Achievements:</strong> {{ job.achievements }}</p>
+          </div>
+          <div class="postcard__tagbox" style="margin-left: 225px;">
+            {% if request.user != company.user %}
+            <span class="tag__item play" style="font-size: 1em; padding: 10px 20px; margin-right:30px;">
+              <a href="{% url 'apply_job' job.id %}" style="font-size: 1em; padding: 10px 20px;">Apply</a>
+            </span>
+            {% endif %}
+            <span class="tag__item play" style="font-size: 1em; padding: 10px 20px;">
+              <a href="#" onclick="ignorePost(this)" style="font-size: 1em; padding: 10px 20px;">Ignore</a>
+            </span>
+          </div>
+          </div>
+
+
+        </div>
+      </article>
+      {% endif %}
+      {% endfor %}
+      {% endfor %}
+    </div>
+    
+  </section>
+
+  <script>
+    function showApplyAlert(url) {
+      Swal.fire({
+        title: 'Application Submitted',
+        text: 'You applied successfully!',
+        icon: 'success',
+        confirmButtonText: 'OK'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          window.location.href = url;
+        }
+      });
+    }
+
+    function ignorePost(button) {
+      button.closest('article').style.display = 'none';
+    }
+  </script>
+</body>
+</html>
+
+{% endblock %}
